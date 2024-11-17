@@ -103,7 +103,7 @@ contract DeflatePortal {
    */
   function executeStrategy(bytes calldata txData) external payable {
     // Validate the portal calldata
-    (, address token, uint256 amount) =_validatePortalCalldata(txData);
+    (, address token, uint256 amount, address recipient) =_validatePortalCalldata(txData);
 
     //approve the router to spend the input token
     IERC20(token).approve(routerAddress, amount);
@@ -130,7 +130,7 @@ contract DeflatePortal {
    */
   function _validatePortalCalldata(
     bytes calldata txData
-  ) internal view returns (bool, address, uint256) {
+  ) internal view returns (bool, address, uint256, address) {
     IPortalsRouter.OrderPayload memory orderPayload;
     address partner;
 
@@ -156,12 +156,12 @@ contract DeflatePortal {
     // Validate amounts
     require(order.inputAmount > 0, "Invalid input amount");
     require(order.minOutputAmount > 0, "Invalid min output amount");
-    return (true, order.inputToken, order.inputAmount);
+    return (true, order.inputToken, order.inputAmount, order.recipient);
   }
 
   function validatePortalCalldata(
     bytes calldata txData
-  ) external view returns (bool, address, uint256) {
+  ) external view returns (bool, address, uint256, address) {
     return _validatePortalCalldata(txData);
   }
 }
